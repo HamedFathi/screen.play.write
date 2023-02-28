@@ -1,5 +1,9 @@
 ![playwright](https://user-images.githubusercontent.com/8418700/220898294-ec067d4d-c65c-43ab-96d7-8fdf52d0a6a7.png)
 
+[![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)](https://opensource.org/licenses/MIT)
+[![npm version](https://badge.fury.io/js/screen.play.write.svg)](https://badge.fury.io/js/screen.play.write)
+[![Downloads](https://img.shields.io/npm/dm/screen.play.write.svg)](https://www.npmjs.com/package/screen.play.write)
+
 ## What is Screenplay Pattern?
 
 The Screenplay Pattern is a user-centric approach to writing workflow-level automated acceptance tests. This helps automation testers to write test cases in terms of Business language.
@@ -20,7 +24,37 @@ Actors use Abilities to perform Interactions.
     * Tasks execute procedures on the features under test.
     * Questions return state about the features under test.
     * Interactions may use Locators, Requests, and other Models.
-    
+
+
+**Actors:** Actors are the main entities in the Screenplay Pattern. They represent the different types of users who
+interact with the system. Each actor is responsible for performing specific tasks and interacting with the
+system in a specific way. For example, an actor could represent a regular user, an administrator, or a
+customer support representative.
+
+**Interactions:** Interactions are the actions that an actor performs on the system. They represent the different
+ways that an actor can interact with the system, such as clicking a button, entering data into a form, or
+navigating to a specific page.
+
+**Questions:** Questions are used to retrieve information from the system. They represent the different types of
+information that an actor might need to retrieve during the course of their interactions with the system. For
+example, a question could be used to retrieve the text of an error message or the value of a specific field in a
+form.
+
+**Tasks:** Tasks are the main building blocks of the Screenplay Pattern. They represent the different activities that
+an actor performs in order to achieve a specific goal. A task can consist of one or more interactions and
+questions, and can be used to model complex workflows and user journeys.
+
+**Abilities:** Abilities represent the different capabilities that an actor has. They include things like the ability to
+interact with the system using a specific user interface, the ability to read and write data to a database, and
+the ability to send and receive messages over a network.
+
+| Concepts       | Differences       |
+|----------------|----------------|
+| Tasks vs. Interactions | The primary difference between tasks and interactions is their granularity. Tasks represent high-level actions that an actor performs, while interactions represent the individual steps or actions that make up a task. For example, a task might be "Login to the system", while the interactions that make up that task might include entering a username, entering a password, and clicking the "Login" button. |
+| Abilities vs. Interactions | While both abilities and interactions represent actions that an actor can perform, they serve different purposes. Abilities represent the skills or capabilities that an actor possesses, while interactions represent the specific actions that an actor performs in order to complete a task. Abilities are typically called inside interactions, as they represent a specific skill or capability that an actor possesses. Interactions are actions that the actor performs using their abilities. |
+| Tasks vs. Questions | Tasks and questions are closely related, but they serve different purposes. Tasks represent the actions that an actor performs, while questions represent the verifications that the actor performs after completing those actions. In other words, tasks are about doing, while questions are about verifying. |
+| Actors vs. Abilites | Actors and abilities are also closely related, but they serve different purposes. Actors represent the users or personas who interact with the system being tested, while abilities represent the skills or capabilities that those actors possess. In other words, actors are the "who" of the system being tested, while abilities are the "what". |
+
 ## The Principles
 
 The Screenplay Pattern adheres to **SOLID** design principles:
@@ -65,7 +99,7 @@ export class UseSqlDatabase extends Ability<DbConnection> {
 // Interactions
 export class VisitPage extends Interaction {
   async attemptAs(actor: Actor): Promise<void> {
-    let page = await actor.useAbility(UsePlaywrightPage); // Use an abilitiy to interact with the thing.
+    let page = await actor.useAbility(UsePlaywrightPage); // Use an abilitiy to interact with what you want.
     await page.goto("http://...");
   }
 }
@@ -106,6 +140,7 @@ export class AddTodo extends Task {
 
 // Question
 export class GetLastTodoItem extends Question {
+  // Always returns a value to write assertions on it.
   async askAs(actor: Actor): Promise<string> {
     let page = await actor.useAbility(UsePlaywrightPage);
     return await page.getByTestId('todo').last().innerText();
@@ -134,7 +169,16 @@ test('add a new item to todo list', async ({ page }) => {
 });
 ```
 
+## [NPM](https://www.npmjs.com/package/screen.play.write)
+
+You install it via:
+
+```
+npm i screen.play.write
+```
+
 ## References
 
-https://q2ebanking.github.io/boa-constrictor/getting-started/screenplay/
+1. https://serenity-js.org/handbook/design/screenplay-pattern.html
+2. https://q2ebanking.github.io/boa-constrictor/getting-started/screenplay/
 
