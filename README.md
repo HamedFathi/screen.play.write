@@ -119,28 +119,31 @@ export class AddTodoItem extends Interaction {
 }
 
 // Task
-// Executing all interactions in order. (less control but automatically)
-export class AddTodoAuto extends TaskAuto {
+// Executing all interactions in order. (less control)
+export class AddTodoTask extends Task {
   constructor() {
     super([new VisitPage(), new ClickOnAddButton(), new AddTodoItem()]);
+  }
+  public async performAs(actor: Actor): Promise<void> {
+    await this.attemptInteractionsAs(actor);
   }
 }
 
-// Executing all interactions based on QA/Developer idea. (more control but manually)
+// Executing all interactions based on QA/Developer idea. (more control)
 export class AddTodo extends Task {
-  public async performAs(actor: Actor): Promise<void> {
-    await this.attemptInteractionAs(actor, VisitPage); // You can get a return value and assert on that.
-    await this.attemptInteractionAs(actor, ClickOnAddButton);
-    await this.attemptInteractionAs(actor, AddTodoItem);
-  }
   constructor() {
     super([new VisitPage(), new ClickOnAddButton(), new AddTodoItem()]);
+  }    
+  public async performAs(actor: Actor): Promise<void> {
+    await this.attemptInteractionAs(actor, VisitPage); // You can get a return value and assert on it if you want.
+    await this.attemptInteractionAs(actor, ClickOnAddButton);
+    await this.attemptInteractionAs(actor, AddTodoItem);
   }
 }
 
 // Question
 export class GetLastTodoItem extends Question {
-  // Always returns a value to write assertions on it.
+  // Always returns a value to write assertions based on it.
   async askAs(actor: Actor): Promise<string> {
     let page = await actor.useAbility(UsePlaywrightPage);
     return await page.getByTestId('todo').last().innerText();
@@ -155,7 +158,7 @@ test('add a new item to todo list', async ({ page }) => {
   // Pass abilities to the ctor
   let user = new Actor([pw /*, sqlDb*/]); // Our user
 
-  await user.performs(new AddTodoAuto()); // Executes a task, an interaction, or an interactions.
+  await user.performs(new AddTodoTask()); // Executes a task, an interaction, an interactions, or a tasks.
   // await user.performs(new AddTodo());
 
   // Question & Assertion separately.

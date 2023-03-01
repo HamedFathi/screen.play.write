@@ -1,6 +1,6 @@
 {
   "name": "screen.play.write",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "description": "Screenplay pattern for Playwright.",
   "keywords": [
     "screenplay",

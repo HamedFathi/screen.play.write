@@ -10,16 +10,6 @@ export abstract class Interaction {
   public abstract attemptAs(actor: Actor): Promise<unknown>;
 }
 
-export abstract class TaskAuto {
-  constructor(private readonly interactions: Interaction[]) {}
-
-  public async performAs(actor: Actor): Promise<void> {
-    for (const interaction of this.interactions) {
-      await interaction.attemptAs(actor);
-    }
-  }
-}
-
 export abstract class Task {
   constructor(private readonly interactions: Interaction[]) {}
 
@@ -48,7 +38,7 @@ export abstract class Task {
     return await matchingInteractions[0].attemptAs(actor);
   }
 
-  public abstract performAs(actor: Actor): Promise<void>;
+  public abstract performAs(actor: Actor): Promise<unknown>;
 }
 
 export abstract class Question {
@@ -73,23 +63,31 @@ export class Actor {
   }
 
   public async performs(
-    taskOrInteraction: Task | TaskAuto | Interaction | Interaction[]
-  ): Promise<void> {
+    taskOrInteraction: Task | Task[] | Interaction | Interaction[]
+  ): Promise<unknown> {
     if (taskOrInteraction instanceof Task) {
-      await taskOrInteraction.performAs(this);
-      return;
-    }
-    if (taskOrInteraction instanceof TaskAuto) {
-      await taskOrInteraction.performAs(this);
-      return;
+      return await taskOrInteraction.performAs(this);
     }
     if (taskOrInteraction instanceof Interaction) {
-      await taskOrInteraction.attemptAs(this);
+      return await taskOrInteraction.attemptAs(this);
+    }
+    if (
+      Array.isArray(taskOrInteraction) &&
+      taskOrInteraction.length > 0 &&
+      taskOrInteraction[0] instanceof Task
+    ) {
+      for (const interaction of taskOrInteraction) {
+        await (interaction as Task).performAs(this);
+      }
       return;
     }
-    if (Array.isArray(taskOrInteraction)) {
+    if (
+      Array.isArray(taskOrInteraction) &&
+      taskOrInteraction.length > 0 &&
+      taskOrInteraction[0] instanceof Interaction
+    ) {
       for (const interaction of taskOrInteraction) {
-        await interaction.attemptAs(this);
+        await (interaction as Interaction).attemptAs(this);
       }
       return;
     }
